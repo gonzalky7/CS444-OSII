@@ -1,0 +1,35 @@
+#1: (1 pt) What's the purpose of a DMA unit? 
+The direct memory access is used to handle bulk movement of data. It sets up buffers, pointers and counters for the I/O device, the device controller transfers entire block of data, with no intervention by the CPU. Only one interrupt is generated per block. While these operations are happening the CPU is available to accomplish other work. 
+
+
+#2: (2 pts) Explain the difference between concurrent and simultaneous execution.  
+Concurrency is when two processes are executing or being handled at the same time but independently. But simultaneous execution happens when processes execute at the same time but are created into smaller subtasks which can be handled simultaneously.
+
+
+#3: (1 pts) What is cache coherency? 
+Cache coherency is when resources are shared and every system has to have the most up-to-date information or value in its independent cache.  
+
+
+#4: (3 pts) Name and describe six different types of system calls. 
+
+fork() = Used to create processes. Takes no arguments and returns a process ID.
+The purpose of fork() is to create a new process, which becomes the child process of the caller.
+exit() = Used to terminate calling processes. Open file descriptors belonging to 
+processes are closed.
+wait() = Called to suspend execution of the calling process until one of its children terminates. 
+open() = Used to open the file specified by a pathname. 
+read() = Reads from a file descriptor. 
+getpid() = Returns the process ID of the calling process. 
+
+
+
+#5: (2 pt) Explain the difference between a mutex and a semaphore. Why might a programmer use a semaphore instead of a mutex? 
+Mutex is a type of semaphore but only allows for value 1. Mutex only allows for a single thread at a time making other threads wait until the first thread has exited. Semaphore can allow for n number of thread to access a shared resource. Threads can request access to a resource (decrementing the semaphore), and can signal that they have finished using the resource (incrementing the semaphore). 
+
+
+
+#6: (1 pt) What is Keringhan's Law?
+“Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
+
+
+
