@@ -107,6 +107,8 @@ void producerProducingItems(int id) {
     //Had to use long long (Error: Cast from pointer to smaller type 'int' loses information)
     int proNumber = id;
     
+    cout <<"Prod number" << proNumber<<endl;
+    
     /*
         TODO: Way to evenly divide number of items between number of threads.
         Grabbing the thread ID or Number of Thread we multiply it by number of items
@@ -208,42 +210,43 @@ int main(int argc, const char * argv[]) {
     //sem_init(&full, 0, 0);
     //sem_init(&mux, 0, 1);
     
-    vector<thread> tidsProducer;
-    vector<thread> tidsConsumer;
+//    vector<thread> tidsProducer;
+//    vector<thread> tidsConsumer;
     //Need to have a unique Thread ID for each thread
     //Create mulptiple thread ids build an array of thread ids (dataType name[sizeOfThread])
     //thread tidsProducer[numberProducer];
     //thread tidsConsumer[numberConsumer];
     
-    
+     std::thread first (producerProducingItems,1);
+     first.join();
     //Creating PRODUCER THREADS
     //To create thread, must pass in ThreadID to know which thread you are working on
     //Attributes control how thread is going to function, pass address of attributs
     //When passing in function that must execute do not put brackets, because it will return a value (no brackets function pointer)
     //Pass in arguments with Thread so pass address of variable.
-    for(int i = 0; i < numberProducer; i++){
-        //Creating Multiple Threads
-        tidsProducer.push_back(thread(producerProducingItems, i));
-    
-    }
-    
-    //Creating CONSUMER THREADS
-    for(int i = 0; i < numberConsumer; i++){
-        //Creating Multiple Threads
-        tidsConsumer.push_back(thread(consumerConsumingItems, i));
-    }
-    
-    //Want main thread to wait until thread has done its work
-    for (int i = 0; i < numberProducer; i++) {
-        tidsProducer[i].join();
-    }
-    
+//    for(int i = 0; i < numberProducer; i++){
+//        //Creating Multiple Threads
+//        tidsProducer.push_back(thread(producerProducingItems, i));
+//
+//    }
+//
+//    //Creating CONSUMER THREADS
+//    for(int i = 0; i < numberConsumer; i++){
+//        //Creating Multiple Threads
+//        tidsConsumer.push_back(thread(consumerConsumingItems, i));
+//    }
+//
+//    //Want main thread to wait until thread has done its work
+//    for (int i = 0; i < numberProducer; i++) {
+//        tidsProducer[i].join();
+//    }
+//
     //After all producer threads have finished, print message to stderr
     fprintf(stderr, "Done producing!!\n");
-    
-    for (int i = 0; i < numberProducer; i++) {
-        tidsConsumer[i].join();
-    }
+//
+//    for (int i = 0; i < numberProducer; i++) {
+//        tidsConsumer[i].join();
+//    }
     
     return 0;
 }
