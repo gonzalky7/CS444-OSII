@@ -208,8 +208,8 @@ int main(int argc, const char * argv[]) {
     //sem_init(&full, 0, 0);
     //sem_init(&mux, 0, 1);
     
-    vector<thread> tidsProducer(numberProducer);
-    vector<thread> tidsConsumer(numberProducer);
+    vector<thread> tidsProducer;
+    vector<thread> tidsConsumer;
     //Need to have a unique Thread ID for each thread
     //Create mulptiple thread ids build an array of thread ids (dataType name[sizeOfThread])
     //thread tidsProducer[numberProducer];
