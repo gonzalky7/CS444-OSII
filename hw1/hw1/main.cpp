@@ -197,14 +197,14 @@ int main(int argc, const char * argv[]) {
     
     //Pass it buffersize because Vector will start out empty
     //So semaphore should not block.
-    if ((empty = sem_open("emptySem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
-        perror("semaphore initilization");
-        exit(1);
-    }
-    if ((full = sem_open("fullSem", O_CREAT, 0644, 0)) == SEM_FAILED) {
-        perror("semaphore initilization");
-        exit(1);
-    }
+//    if ((empty = sem_open("emptySem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
+//        perror("semaphore initilization");
+//        exit(1);
+//    }
+//    if ((full = sem_open("fullSem", O_CREAT, 0644, 0)) == SEM_FAILED) {
+//        perror("semaphore initilization");
+//        exit(1);
+//    }
     
     //sem_init(&empty, 0, 1);
     //sem_init(&full, 0, 0);
@@ -217,7 +217,7 @@ int main(int argc, const char * argv[]) {
     //thread tidsProducer[numberProducer];
     //thread tidsConsumer[numberConsumer];
     
-     std::thread first (producerProducingItems,1);
+     thread first (producerProducingItems,1);
      first.join();
     //Creating PRODUCER THREADS
     //To create thread, must pass in ThreadID to know which thread you are working on
