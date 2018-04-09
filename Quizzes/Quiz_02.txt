@@ -1,0 +1,7 @@
+#1 (2 pts) Explain the general steps of a feature selection algorithm.   
+
+#2 (2 pts) What's the difference between wrapper and filter feature selection algorithms?
+
+#3 (2 pts)  Why might a data scientist perform a principal component analysis on high-dimensional data?  What is a PCA useful for? 
+
+#4 (4 pts) Write Python code that visualizes the first two principal components of the Iris dataset.   NOTE: upload both the visualization and python code.  
