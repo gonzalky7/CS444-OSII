@@ -13,7 +13,6 @@
 #include <vector>
 #include <iostream>
 #include <typeinfo>
-#include <thread>
 
 using namespace std;
 
@@ -91,8 +90,7 @@ void checkValuesGreaterThanZero(string value, int index) {
  - Before producing each item, producer must sleep random time(200-700 usec)
  - If buffer full, producer must wait
  */
-void producerProducingItems(int id) {
-    
+void *producerProducingItems(void *arg) {
     long long divideItemsThreadStart;
     long long divideItemsThreadEnd;
     int itemsDividedbyProducers = numberItems/numberProducer;
@@ -105,9 +103,7 @@ void producerProducingItems(int id) {
     
     //Capture thread value that was passed
     //Had to use long long (Error: Cast from pointer to smaller type 'int' loses information)
-    int proNumber = id;
-    
-    cout <<"Prod number" << proNumber<<endl;
+    long long proNumber = (long long) arg;
     
     /*
         TODO: Way to evenly divide number of items between number of threads.
@@ -138,7 +134,7 @@ void producerProducingItems(int id) {
              }
              */
         
-        
+        //cout << "Producing: " << endl;
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
@@ -149,9 +145,9 @@ void producerProducingItems(int id) {
         
         
         
-        if (vector_items.size() < bufferSize) {
+      
             vector_items.push_back(item);
-        }
+        
        
         // if there are 1 or more threads waiting, wake 1
         sem_post(full);//this will set full semaphore to 1 thus waking the consumer thread
@@ -164,13 +160,14 @@ void producerProducingItems(int id) {
  - On Consumption, consumer will sleep and print the Consumer number and ID of item to stdout
  Introduce two semaphores empty and full. Which the threads will use to indicate when an item entry has been emptied or filled.
  */
-void consumerConsumingItems(int id) {
+void *consumerConsumingItems(void *arg) {
     //Grabing the passed argument from thread creating and storing this will be Consumer Number
-    int consumerNumber = id;
-    createdItems *item =(createdItems*)malloc(sizeof(createdItems));
+     long long consumerNumber = (long long) arg;
+    createdItems *item ;
     
     //the producer will post after it posts
     while(1) {
+        //cout << "Consuming: " << endl;
         sem_wait(full); //if consumer runs first full was intilized to 0, the call will block the consumer and wait for another thread to call
         
         item = vector_items.back(); //Grabing the last item of the vector
@@ -178,7 +175,7 @@ void consumerConsumingItems(int id) {
     
         sem_post(empty);
         
-        cout << consumerNumber << ":" << " Consuming " << item->idNumbers;
+        cout << consumerNumber << ":" << " Consuming " << item->idNumbers << endl;
         usleep(item->sleepTime); //go to sleep....
     }
 }
@@ -197,56 +194,61 @@ int main(int argc, const char * argv[]) {
     
     //Pass it buffersize because Vector will start out empty
     //So semaphore should not block.
-//    if ((empty = sem_open("emptySem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
-//        perror("semaphore initilization");
-//        exit(1);
-//    }
-//    if ((full = sem_open("fullSem", O_CREAT, 0644, 0)) == SEM_FAILED) {
-//        perror("semaphore initilization");
-//        exit(1);
-//    }
+    if ((empty = sem_open("emptySem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
+        perror("semaphore initilization");
+        exit(1);
+    }
+    if ((full = sem_open("fullSem", O_CREAT, 0644, 0)) == SEM_FAILED) {
+        perror("semaphore initilization");
+        exit(1);
+    }
     
     //sem_init(&empty, 0, 1);
     //sem_init(&full, 0, 0);
     //sem_init(&mux, 0, 1);
     
-//    vector<thread> tidsProducer;
-//    vector<thread> tidsConsumer;
+    
     //Need to have a unique Thread ID for each thread
     //Create mulptiple thread ids build an array of thread ids (dataType name[sizeOfThread])
-    //thread tidsProducer[numberProducer];
-    //thread tidsConsumer[numberConsumer];
+    pthread_t tidsProducer[numberProducer];
+    pthread_t tidsConsumer[numberConsumer];
     
-     thread first (producerProducingItems,1);
-     first.join();
+    
     //Creating PRODUCER THREADS
     //To create thread, must pass in ThreadID to know which thread you are working on
     //Attributes control how thread is going to function, pass address of attributs
     //When passing in function that must execute do not put brackets, because it will return a value (no brackets function pointer)
     //Pass in arguments with Thread so pass address of variable.
-//    for(int i = 0; i < numberProducer; i++){
-//        //Creating Multiple Threads
-//        tidsProducer.push_back(thread(producerProducingItems, i));
-//
-//    }
-//
-//    //Creating CONSUMER THREADS
-//    for(int i = 0; i < numberConsumer; i++){
-//        //Creating Multiple Threads
-//        tidsConsumer.push_back(thread(consumerConsumingItems, i));
-//    }
-//
-//    //Want main thread to wait until thread has done its work
-//    for (int i = 0; i < numberProducer; i++) {
-//        tidsProducer[i].join();
-//    }
-//
+    for(int i = 0; i < numberProducer; i++){
+        //creating attributes
+        pthread_attr_t attrProducer;
+        pthread_attr_init(&attrProducer);
+        //Creating Multiple Threads
+        pthread_create(&tidsProducer[i], &attrProducer, producerProducingItems, (void *)(size_t) i);
+    }
+    
+    //Creating CONSUMER THREADS
+    for(int i = 0; i < numberConsumer; i++){
+        //creating attributes
+        pthread_attr_t attrConsumer;
+        pthread_attr_init(&attrConsumer);
+        //Creating Multiple Threads
+        pthread_create(&tidsConsumer[i], &attrConsumer, consumerConsumingItems, (void *)(size_t) i);
+    }
+    
+    //Want main thread to wait until thread has done its work
+    for (int i = 0; i < numberProducer; i++) {
+        pthread_join(tidsProducer[i], NULL);
+    }
+    
     //After all producer threads have finished, print message to stderr
     fprintf(stderr, "Done producing!!\n");
-//
-//    for (int i = 0; i < numberProducer; i++) {
-//        tidsConsumer[i].join();
-//    }
+    
+    for (int i = 0; i < numberProducer; i++) {
+        pthread_join(tidsConsumer[i], NULL);
+    }
+    
+
     
     return 0;
 }
