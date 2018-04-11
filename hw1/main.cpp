@@ -167,7 +167,7 @@ void *consumerConsumingItems(void *threadid) {
         pthread_mutex_unlock(&locked);
         
         usleep(sleep); //go to sleep....
-        cout << "Thread id at end of consumer: " << tid <<endl;
+        
     }
 }
 
