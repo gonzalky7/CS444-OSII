@@ -110,9 +110,9 @@ void *producerProducingItems(void *threadid) {
     divideItemsThreadStart = tid * (numberItems/ numberProducer);
     divideItemsThreadEnd = ((tid + 1) * (numberItems / numberProducer));
     
-        cout <<"Start: " << divideItemsThreadStart << endl ;
-        cout <<"End: " << divideItemsThreadEnd << endl;
-    
+//        cout <<"Start: " << divideItemsThreadStart << endl ;
+//        cout <<"End: " << divideItemsThreadEnd << endl;
+//
     /*
      
      */
@@ -170,7 +170,7 @@ void *consumerConsumingItems(void *threadid) {
         sem_post(&spaceAvailable);
         
         pthread_mutex_unlock(&locked);
-        free(&item);
+    
         usleep(sleep); //go to sleep....
         
     }
