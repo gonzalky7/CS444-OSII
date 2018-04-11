@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <typeinfo>
+#include <sstream>
 
 using namespace std;
 
@@ -75,7 +76,11 @@ void assignCommandLineArguments(int value, int i) {
  */
 void checkValuesGreaterThanZero(string value, int index) {
     
-    int StringToInt = stoi(value);
+    //int StringToInt = stoi(value);
+    stringstream val(value);
+    int StringToInt = 0;
+    val >> StringToInt;
+    
     if(StringToInt <= 0){
         fprintf(stderr, "Values must be > 0\n");
         exit(1);
