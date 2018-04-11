@@ -152,15 +152,14 @@ void *consumerConsumingItems(void *threadid) {
     createdItems item;
     
     while(1) {
-         item = *vector_items.back(); //Grabing the last item of the vector
-        cout << tid << ":" << " Consuming " << item.idNumbers << endl;
+        
         sem_wait(&addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
         pthread_mutex_lock(&locked);
         //cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         
         
         item = *vector_items.back(); //Grabing the last item of the vector
-        
+        cout << tid << ":" << " Consuming " << item.idNumbers << endl;
         
         int sleep = item.sleepTime;
         
