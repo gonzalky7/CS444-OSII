@@ -128,7 +128,7 @@ void *producerProducingItems(void *threadid) {
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
-        //cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
+        cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
         vector_items.push_back(item);
         
         // if there are 1 or more threads waiting, wake 1
@@ -158,7 +158,7 @@ void *consumerConsumingItems(void *threadid) {
         //cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = vector_items[vector_items.size() - 1];
         
-        cout <<"item before pop back: " << endl;
+         cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
         
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         //item = *vector_items.back(); //Grabing the last item of the vector
