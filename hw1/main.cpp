@@ -157,7 +157,7 @@ void *consumerConsumingItems(void *threadid) {
         //cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = *vector_items.back(); //Grabing the last item of the vector
         int sleep = item.sleepTime;
-        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        cout << tid << ":" << " Consuming " << item.idNumbers << endl;
         //free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         
