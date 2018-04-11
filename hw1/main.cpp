@@ -24,11 +24,12 @@ int bufferSize;
 int numberItems;
 
 //creating semaphores
-sem_t  *empty;
-sem_t  *full;
+sem_t  *spaceAvailable;
+sem_t  *addItemForConsumption;
 
 
-//mutex lock1;
+mutex mtx;
+
 /*
  Items must contain two numbers:
  - An Identification number (from 0 to num-items - 1)
@@ -51,7 +52,6 @@ void assignCommandLineArguments(int value, int i) {
     {
         case 1:
             numberProducer = value;
-            //cout << "NumberProducer " << numberProducer <<"\n";
             break;
         case 2:
             numberConsumer = value;
@@ -90,69 +90,49 @@ void checkValuesGreaterThanZero(string value, int index) {
  - Before producing each item, producer must sleep random time(200-700 usec)
  - If buffer full, producer must wait
  */
-void *producerProducingItems(void *arg) {
-    long long divideItemsThreadStart;
-    long long divideItemsThreadEnd;
-    int itemsDividedbyProducers = numberItems/numberProducer;
+void *producerProducingItems(void *threadid) {
+    long divideItemsThreadStart;
+    long divideItemsThreadEnd;
+    long tid;
     
-    //Not use mutex lock and unlock directly in case exception is thrown. RAII
-    //Whenever the guard goes out of cscope mutex will unlock
+    //Capture thread id that was passed from pthread_Create
+    tid = (long)threadid;
     
-    //Allocating memory for typedef strucks
+    //Allocating memory for typedef struct
     createdItems *item =(createdItems*)malloc(sizeof(createdItems));
     
-    //Capture thread value that was passed
-    //Had to use long long (Error: Cast from pointer to smaller type 'int' loses information)
-    long long proNumber = (long long) arg;
+    //To evenly divide items between Threads
+    divideItemsThreadStart = tid * (numberItems/ numberProducer);
+    divideItemsThreadEnd = ((tid + 1) * (numberItems / numberProducer));
+    
+    //    cout <<"Start: " << divideItemsThreadStart << endl ;
+    //    cout <<"End: " << divideItemsThreadEnd << endl;
     
     /*
-        TODO: Way to evenly divide number of items between number of threads.
-        Grabbing the thread ID or Number of Thread we multiply it by number of items
-        For end we take start number and add it to number of items  - 1 to account for 0
+     
      */
-    divideItemsThreadStart = proNumber * itemsDividedbyProducers;
-    divideItemsThreadEnd = divideItemsThreadStart + numberItems;
-    /*
-        - num_items must be evenly divided between num_producers
-        - if num_items = 1000 and num_producers = 10, then each producer thread
-        - produce 100 unique items
-        - - Using a for loop to create items
-     */
-    for (long long i = divideItemsThreadStart ; i < divideItemsThreadEnd; i++) {
+    sem_wait(spaceAvailable);//empty was initilied to buffserSize will go on to put item in vectory
+    mtx.lock();
+    for (long i = divideItemsThreadStart; i < divideItemsThreadEnd; i++) {
+        //Go To SLeeeeeeeeeeep
         int sleepValue = rand()%(700 - 300)+ 300;
         usleep(sleepValue);
         
-        /*
-             int sem_wait(sem_t *s) {
-             wait until value of semaphore s is greater than 0
-             decrement the value of semaphore s by 1
-             }
-         
-             int sem_post(sem_t *s) {
-             increment the value of semaphore s by 1
-             if there are 1 or more threads waiting, wake 1
-             }
-             */
-        
-        //cout << "Producing: " << endl;
+        //Producer first waits for a buffer to become empty in order to put data into it.
+        //Consumer waits for a buffer to become filled before using it.
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
+        vector_items.push_back(item);
         
-        //Producer first waits for a buffer to become empty in order to put data into it.
-        //Consumer waits for a buffer to become filled before using it.
-        sem_wait(empty);//empty was initilied to buffserSize will go on to put item in vectory
-        
-        
-        
-      
-            vector_items.push_back(item);
-        
-       
         // if there are 1 or more threads waiting, wake 1
-        sem_post(full);//this will set full semaphore to 1 thus waking the consumer thread
+        //this will set full semaphore to 1 thus waking the consumer thread
+        sem_post(addItemForConsumption);
+        //cout <<"Vector size: " << vector_items.size() <<endl;
+        
     }
-    pthread_exit(0);
+    mtx.unlock();
+    pthread_exit(NULL);
 }
 
 /*
@@ -160,28 +140,32 @@ void *producerProducingItems(void *arg) {
  - On Consumption, consumer will sleep and print the Consumer number and ID of item to stdout
  Introduce two semaphores empty and full. Which the threads will use to indicate when an item entry has been emptied or filled.
  */
-void *consumerConsumingItems(void *arg) {
+void *consumerConsumingItems(void *threadid) {
     //Grabing the passed argument from thread creating and storing this will be Consumer Number
-     long long consumerNumber = (long long) arg;
-    createdItems *item ;
+    long tid = (long) threadid;
+    createdItems *item;
     
-    //the producer will post after it posts
     while(1) {
-        //cout << "Consuming: " << endl;
-        sem_wait(full); //if consumer runs first full was intilized to 0, the call will block the consumer and wait for another thread to call
         
+        
+        sem_wait(addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
+        mtx.lock();
+        cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = vector_items.back(); //Grabing the last item of the vector
+        int sleep = item->sleepTime;
+        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        //free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
-    
-        sem_post(empty);
-        
-        cout << consumerNumber << ":" << " Consuming " << item->idNumbers << endl;
-        usleep(item->sleepTime); //go to sleep....
+        sem_post(spaceAvailable);
+        mtx.unlock();
+        usleep(sleep); //go to sleep....
+        cout << "Thread id at end of consumer: " << tid <<endl;
     }
 }
 
 
 int main(int argc, const char * argv[]) {
+    int rc;
     if (argc != 5){
         fprintf(stderr, "usage: ./hw1 num_prod num_cons buf_size num_items\n");
         exit(1);
@@ -192,21 +176,15 @@ int main(int argc, const char * argv[]) {
         checkValuesGreaterThanZero(argv[i], i);
     }
     
-    //Pass it buffersize because Vector will start out empty
-    //So semaphore should not block.
-    if ((empty = sem_open("emptySem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
+    //Pass it buffersize this will allow for producer threads access and add items to buffer
+    if ((spaceAvailable = sem_open("available_sem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
         perror("semaphore initilization");
         exit(1);
     }
-    if ((full = sem_open("fullSem", O_CREAT, 0644, 0)) == SEM_FAILED) {
+    if ((addItemForConsumption = sem_open("addit_sem", O_CREAT, 0644, 0)) == SEM_FAILED) {
         perror("semaphore initilization");
         exit(1);
     }
-    
-    //sem_init(&empty, 0, 1);
-    //sem_init(&full, 0, 0);
-    //sem_init(&mux, 0, 1);
-    
     
     //Need to have a unique Thread ID for each thread
     //Create mulptiple thread ids build an array of thread ids (dataType name[sizeOfThread])
@@ -216,24 +194,21 @@ int main(int argc, const char * argv[]) {
     
     //Creating PRODUCER THREADS
     //To create thread, must pass in ThreadID to know which thread you are working on
-    //Attributes control how thread is going to function, pass address of attributs
+    //Attributes control how thread is going to function, pass address of attributs: Using NULL
     //When passing in function that must execute do not put brackets, because it will return a value (no brackets function pointer)
     //Pass in arguments with Thread so pass address of variable.
     for(int i = 0; i < numberProducer; i++){
-        //creating attributes
-        pthread_attr_t attrProducer;
-        pthread_attr_init(&attrProducer);
-        //Creating Multiple Threads
-        pthread_create(&tidsProducer[i], &attrProducer, producerProducingItems, (void *)(size_t) i);
+        rc = pthread_create(&tidsProducer[i], NULL, producerProducingItems, (void *)(size_t) i);
+        if (rc) {
+            cout << "Error: Unable to create thread, " << rc << endl;
+            exit(-1);
+        }
     }
     
     //Creating CONSUMER THREADS
     for(int i = 0; i < numberConsumer; i++){
-        //creating attributes
-        pthread_attr_t attrConsumer;
-        pthread_attr_init(&attrConsumer);
         //Creating Multiple Threads
-        pthread_create(&tidsConsumer[i], &attrConsumer, consumerConsumingItems, (void *)(size_t) i);
+        pthread_create(&tidsConsumer[i], NULL, consumerConsumingItems, (void *)(size_t) i);
     }
     
     //Want main thread to wait until thread has done its work
@@ -244,11 +219,11 @@ int main(int argc, const char * argv[]) {
     //After all producer threads have finished, print message to stderr
     fprintf(stderr, "Done producing!!\n");
     
+    
     for (int i = 0; i < numberProducer; i++) {
         pthread_join(tidsConsumer[i], NULL);
     }
-    
-
+    pthread_exit(NULL);
     
     return 0;
 }
