@@ -24,12 +24,12 @@ int bufferSize;
 int numberItems;
 
 //creating semaphores
-sem_t  *spaceAvailable;
-sem_t  *addItemForConsumption;
+sem_t  spaceAvailable;
+sem_t  addItemForConsumption;
 
 
-mutex mtx;
-
+//mutex mtx;
+pthread_mutex_t locked = PTHREAD_MUTEX_INITIALIZER;
 /*
  Items must contain two numbers:
  - An Identification number (from 0 to num-items - 1)
@@ -112,7 +112,7 @@ void *producerProducingItems(void *threadid) {
      
      */
     sem_wait(spaceAvailable);//empty was initilied to buffserSize will go on to put item in vectory
-    mtx.lock();
+       pthread_mutex_lock(&locked);
     for (long i = divideItemsThreadStart; i < divideItemsThreadEnd; i++) {
         //Go To SLeeeeeeeeeeep
         int sleepValue = rand()%(700 - 300)+ 300;
@@ -131,7 +131,7 @@ void *producerProducingItems(void *threadid) {
         //cout <<"Vector size: " << vector_items.size() <<endl;
         
     }
-    mtx.unlock();
+   pthread_mutex_unlock(&locked);
     pthread_exit(NULL);
 }
 
@@ -149,15 +149,18 @@ void *consumerConsumingItems(void *threadid) {
         
         
         sem_wait(addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
-        mtx.lock();
+        pthread_mutex_lock(&locked);
         cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = vector_items.back(); //Grabing the last item of the vector
         int sleep = item->sleepTime;
         cout << tid << ":" << " Consuming " << item->idNumbers << endl;
         //free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
+        
         sem_post(spaceAvailable);
-        mtx.unlock();
+        
+        pthread_mutex_unlock(&locked);
+        
         usleep(sleep); //go to sleep....
         cout << "Thread id at end of consumer: " << tid <<endl;
     }
@@ -177,14 +180,17 @@ int main(int argc, const char * argv[]) {
     }
     
     //Pass it buffersize this will allow for producer threads access and add items to buffer
-    if ((spaceAvailable = sem_open("available_sem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
-        perror("semaphore initilization");
-        exit(1);
-    }
-    if ((addItemForConsumption = sem_open("addit_sem", O_CREAT, 0644, 0)) == SEM_FAILED) {
-        perror("semaphore initilization");
-        exit(1);
-    }
+    sem_init(&spaceAvailable, 0, 0);
+    sem_init(&spaceAvailable, 0, bufferSize);
+    pthread_mutex_init(&locked, NULL);
+//    if ((spaceAvailable = sem_open("available_sem", O_CREAT, 0644, bufferSize)) == SEM_FAILED) {
+//        perror("semaphore initilization");
+//        exit(1);
+//    }
+//    if ((spaceAvailable = sem_open("addit_sem", O_CREAT, 0644, 0)) == SEM_FAILED) {
+//        perror("semaphore initilization");
+//        exit(1);
+//    }
     
     //Need to have a unique Thread ID for each thread
     //Create mulptiple thread ids build an array of thread ids (dataType name[sizeOfThread])
