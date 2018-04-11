@@ -117,7 +117,7 @@ void *producerProducingItems(void *threadid) {
      
      */
     sem_wait(&spaceAvailable);//empty was initilied to buffserSize will go on to put item in vectory
-       pthread_mutex_lock(&locked);
+    pthread_mutex_lock(&locked);
     for (long i = divideItemsThreadStart; i < divideItemsThreadEnd; i++) {
         //Go To SLeeeeeeeeeeep
         int sleepValue = rand()%(700 - 300)+ 300;
@@ -136,7 +136,7 @@ void *producerProducingItems(void *threadid) {
         //cout <<"Vector size: " << vector_items.size() <<endl;
         
     }
-   pthread_mutex_unlock(&locked);
+    pthread_mutex_unlock(&locked);
     pthread_exit(NULL);
 }
 
@@ -155,10 +155,11 @@ void *consumerConsumingItems(void *threadid) {
         
         sem_wait(&addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
         pthread_mutex_lock(&locked);
-        cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = vector_items.back(); //Grabing the last item of the vector
+        cout <<"item ID: " <<item->idNumbers << "Sleep value: " << item->sleepTime <<endl;
+        
         int sleep = item->sleepTime;
-        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        //cout << tid << ":" << " Consuming " << item->idNumbers << endl;
         //free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         
