@@ -167,7 +167,7 @@ void *consumerConsumingItems(void *threadid) {
         int sleep = item->sleepTime;
         
         //free(item);//After remove item from vector we free the memory
-        vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
+        //vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         
         sem_post(&spaceAvailable);
         
