@@ -128,7 +128,7 @@ void *producerProducingItems(void *threadid) {
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
-        cout << "Item ID: " << idNumbers << "Item Sleep: " << sleepTime <<endl;
+        cout << "Item ID: " << item->idNumbers << "Item Sleep: " << item->sleepTime <<endl;
         vector_items.push_back(item);
         
         // if there are 1 or more threads waiting, wake 1
