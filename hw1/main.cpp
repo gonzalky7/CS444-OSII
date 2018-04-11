@@ -148,10 +148,9 @@ void *producerProducingItems(void *threadid) {
 void *consumerConsumingItems(void *threadid) {
     //Grabing the passed argument from thread creating and storing this will be Consumer Number
     long tid = (long) threadid;
-    createdItems *item;
     
     while(1) {
-        
+        createdItems *item;
         
         sem_wait(&addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
         pthread_mutex_lock(&locked);
@@ -160,7 +159,7 @@ void *consumerConsumingItems(void *threadid) {
         
         int sleep = item->sleepTime;
         //cout << tid << ":" << " Consuming " << item->idNumbers << endl;
-        //free(item);//After remove item from vector we free the memory
+        free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         
         sem_post(&spaceAvailable);
