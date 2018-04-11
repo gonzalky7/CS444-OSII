@@ -110,8 +110,8 @@ void *producerProducingItems(void *threadid) {
     divideItemsThreadStart = tid * (numberItems/ numberProducer);
     divideItemsThreadEnd = ((tid + 1) * (numberItems / numberProducer));
     
-    //    cout <<"Start: " << divideItemsThreadStart << endl ;
-    //    cout <<"End: " << divideItemsThreadEnd << endl;
+        cout <<"Start: " << divideItemsThreadStart << endl ;
+        cout <<"End: " << divideItemsThreadEnd << endl;
     
     /*
      
@@ -128,7 +128,7 @@ void *producerProducingItems(void *threadid) {
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
-        cout << "Item ID: " << item->idNumbers << "Item Sleep: " << item->sleepTime <<endl;
+        //cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
         vector_items.push_back(item);
         
         // if there are 1 or more threads waiting, wake 1
@@ -152,20 +152,25 @@ void *consumerConsumingItems(void *threadid) {
     createdItems item;
     
     while(1) {
-        
+         item = *vector_items.back(); //Grabing the last item of the vector
+        cout << tid << ":" << " Consuming " << item.idNumbers << endl;
         sem_wait(&addItemForConsumption); //if a consumer thread runs first semaphore intilized to 0, the call will block the consumer and wait semaphore in producer to post
         pthread_mutex_lock(&locked);
         //cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
+        
+        
         item = *vector_items.back(); //Grabing the last item of the vector
+        
+        
         int sleep = item.sleepTime;
-        cout << tid << ":" << " Consuming " << item.idNumbers << endl;
+        
         //free(item);//After remove item from vector we free the memory
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         
         sem_post(&spaceAvailable);
         
         pthread_mutex_unlock(&locked);
-        
+        free(&item);
         usleep(sleep); //go to sleep....
         
     }
