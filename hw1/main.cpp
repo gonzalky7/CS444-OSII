@@ -159,8 +159,8 @@ void *consumerConsumingItems(void *threadid) {
         item = vector_items[vector_items.size() - 1];
         vector_items.pop_back();
        
-        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
-        
+        //cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         //cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         int sleep = item->sleepTime;
         
