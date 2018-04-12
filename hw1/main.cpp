@@ -130,7 +130,7 @@ void *producerProducingItems(void *threadid) {
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
-        cout <<"P "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
+        //cout <<"P "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         vector_items.push_back(item);
         
         // if there are 1 or more threads waiting, wake 1
@@ -159,8 +159,8 @@ void *consumerConsumingItems(void *threadid) {
         item = vector_items[vector_items.size() - 1];
         vector_items.pop_back();
        
-        //cout << tid << ":" << " Consuming " << item->idNumbers << endl;
-        cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
+        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        //cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         //cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         int sleep = item->sleepTime;
         
