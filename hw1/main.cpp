@@ -114,7 +114,7 @@ void *producerProducingItems(void *threadid) {
     //        cout <<"End: " << divideItemsThreadEnd << endl;
     //
     /*
-     
+        last 10 not being produced last thread us mod remainder
      */
     sem_wait(&spaceAvailable);//empty was initilied to buffserSize will go on to put item in vectory
     pthread_mutex_lock(&locked);
