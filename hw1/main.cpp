@@ -29,8 +29,9 @@ sem_t  spaceAvailable;
 sem_t  addItemForConsumption;
 
 
-//mutex mtx;
+//mutex mtx for locking critical section;
 pthread_mutex_t locked = PTHREAD_MUTEX_INITIALIZER;
+
 /*
  Items must contain two numbers:
  - An Identification number (from 0 to num-items - 1)
@@ -46,7 +47,7 @@ typedef struct{
 vector<createdItems*> vector_items;
 
 /*
- void assign global variables that have been filtered and converted into chars from command line arguments
+ void assign global variables that have been filtered and converted fro ints to strings taken from command line arguments
  */
 void assignCommandLineArguments(int value, int i) {
     switch (i)
@@ -69,8 +70,8 @@ void assignCommandLineArguments(int value, int i) {
     }
 }
 /*
- Takes command line arguments (strings) and converts them to intengers.
- Then checks to make sure they are greater then zero.
+ Take command line arguments (strings) and converts them to intengers.
+ Check to make sure they are greater then zero.
  If value is less than or equal to zero program exits with error statement.
  Then send converted String to int values and index to assigning function
  */
@@ -91,9 +92,8 @@ void checkValuesGreaterThanZero(string value, int index) {
 
 
 /*
- - Produce items and store them in vector
- - Before producing each item, producer must sleep random time(200-700 usec)
- - If buffer full, producer must wait
+    When a thread calls this function we grab the value that was passed from its creation and capture it.
+    Then create a createdItems pointer and create memory for it.
  */
 void *producerProducingItems(void *threadid) {
     long divideItemsThreadStart;
