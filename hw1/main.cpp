@@ -103,8 +103,6 @@ void *producerProducingItems(void *threadid) {
     //Capture thread id that was passed from pthread_Create
     tid = (long)threadid;
     
-    //Allocating memory for typedef struct
-    createdItems *item =(createdItems*)malloc(sizeof(createdItems));
     
     //To evenly divide items between Threads
     divideItemsThreadStart = tid * (numberItems/ numberProducer);
@@ -123,12 +121,14 @@ void *producerProducingItems(void *threadid) {
         int sleepValue = rand()%(700 - 300)+ 300;
         usleep(sleepValue);
         
+	//Allocating memory for typedef struct
+	createdItems *item =(createdItems*)malloc(sizeof(createdItems));
         //Producer first waits for a buffer to become empty in order to put data into it.
         //Consumer waits for a buffer to become filled before using it.
         //Creating the item (id 0 - (numItems - 1) && Random sleep time 200 - 900 usecs)
         item->idNumbers = i;
         item->sleepTime = rand()%(900 - 200)+ 200;
-        cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
+        cout <<"P "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         vector_items.push_back(item);
         
         // if there are 1 or more threads waiting, wake 1
@@ -158,12 +158,13 @@ void *consumerConsumingItems(void *threadid) {
         //cout << "Vector size inside mutex and semaphore: " << vector_items.size() << endl;
         item = vector_items[vector_items.size() - 1];
         
-         cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
+         //cout << "Item ID: " << item->idNumbers << " Item Sleep: " << item->sleepTime <<endl;
         
         vector_items.pop_back(); //Removes the last element in the vector, effectively reducing the container size by one.
         //item = *vector_items.back(); //Grabing the last item of the vector
-        cout << tid << ":" << " Consuming " << item->idNumbers << endl;
+        //cout << tid << ":" << " Consuming " << item->idNumbers << endl;
         
+        cout <<"C "<<"id: " << item->idNumbers<<" time: "<< item->sleepTime <<endl;
         int sleep = item->sleepTime;
         
         //free(item);//After remove item from vector we free the memory
