@@ -3,15 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7D67467220771E9200728CF5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D67467120771E9200728CF5 /* main.cpp */; };
+		7D66EF3420853BBA003B927A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D66EF3320853BBA003B927A /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		7D67466C20771E9200728CF5 /* CopyFiles */ = {
+		7D66EF2E20853BBA003B927A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -23,12 +23,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7D67466E20771E9200728CF5 /* Live_coding_semaphores */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Live_coding_semaphores; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D67467120771E9200728CF5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7D66EF3020853BBA003B927A /* SleepingBarber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SleepingBarber; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D66EF3320853BBA003B927A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7D67466B20771E9200728CF5 /* Frameworks */ = {
+		7D66EF2D20853BBA003B927A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -38,95 +38,94 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7D67466520771E9200728CF5 = {
+		7D66EF2720853BBA003B927A = {
 			isa = PBXGroup;
 			children = (
-				7D67467020771E9200728CF5 /* Live_coding_semaphores */,
-				7D67466F20771E9200728CF5 /* Products */,
+				7D66EF3220853BBA003B927A /* SleepingBarber */,
+				7D66EF3120853BBA003B927A /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		7D67466F20771E9200728CF5 /* Products */ = {
+		7D66EF3120853BBA003B927A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7D67466E20771E9200728CF5 /* Live_coding_semaphores */,
+				7D66EF3020853BBA003B927A /* SleepingBarber */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7D67467020771E9200728CF5 /* Live_coding_semaphores */ = {
+		7D66EF3220853BBA003B927A /* SleepingBarber */ = {
 			isa = PBXGroup;
 			children = (
-				7D67467120771E9200728CF5 /* main.cpp */,
+				7D66EF3320853BBA003B927A /* main.cpp */,
 			);
-			path = Live_coding_semaphores;
+			path = SleepingBarber;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7D67466D20771E9200728CF5 /* Live_coding_semaphores */ = {
+		7D66EF2F20853BBA003B927A /* SleepingBarber */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7D67467520771E9200728CF5 /* Build configuration list for PBXNativeTarget "Live_coding_semaphores" */;
+			buildConfigurationList = 7D66EF3720853BBA003B927A /* Build configuration list for PBXNativeTarget "SleepingBarber" */;
 			buildPhases = (
-				7D67466A20771E9200728CF5 /* Sources */,
-				7D67466B20771E9200728CF5 /* Frameworks */,
-				7D67466C20771E9200728CF5 /* CopyFiles */,
+				7D66EF2C20853BBA003B927A /* Sources */,
+				7D66EF2D20853BBA003B927A /* Frameworks */,
+				7D66EF2E20853BBA003B927A /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Live_coding_semaphores;
-			productName = Live_coding_semaphores;
-			productReference = 7D67466E20771E9200728CF5 /* Live_coding_semaphores */;
+			name = SleepingBarber;
+			productName = SleepingBarber;
+			productReference = 7D66EF3020853BBA003B927A /* SleepingBarber */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		7D67466620771E9200728CF5 /* Project object */ = {
+		7D66EF2820853BBA003B927A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Kyleen Gonzalez";
 				TargetAttributes = {
-					7D67466D20771E9200728CF5 = {
-						CreatedOnToolsVersion = 9.2;
-						ProvisioningStyle = Automatic;
+					7D66EF2F20853BBA003B927A = {
+						CreatedOnToolsVersion = 9.3;
 					};
 				};
 			};
-			buildConfigurationList = 7D67466920771E9200728CF5 /* Build configuration list for PBXProject "Live_coding_semaphores" */;
-			compatibilityVersion = "Xcode 8.0";
+			buildConfigurationList = 7D66EF2B20853BBA003B927A /* Build configuration list for PBXProject "SleepingBarber" */;
+			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 7D67466520771E9200728CF5;
-			productRefGroup = 7D67466F20771E9200728CF5 /* Products */;
+			mainGroup = 7D66EF2720853BBA003B927A;
+			productRefGroup = 7D66EF3120853BBA003B927A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7D67466D20771E9200728CF5 /* Live_coding_semaphores */,
+				7D66EF2F20853BBA003B927A /* SleepingBarber */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7D67466A20771E9200728CF5 /* Sources */ = {
+		7D66EF2C20853BBA003B927A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D67467220771E9200728CF5 /* main.cpp in Sources */,
+				7D66EF3420853BBA003B927A /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		7D67467320771E9200728CF5 /* Debug */ = {
+		7D66EF3520853BBA003B927A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -136,10 +135,12 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -147,6 +148,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -181,7 +183,7 @@
 			};
 			name = Debug;
 		};
-		7D67467420771E9200728CF5 /* Release */ = {
+		7D66EF3620853BBA003B927A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -191,10 +193,12 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -202,6 +206,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -229,7 +234,7 @@
 			};
 			name = Release;
 		};
-		7D67467620771E9200728CF5 /* Debug */ = {
+		7D66EF3820853BBA003B927A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -237,7 +242,7 @@
 			};
 			name = Debug;
 		};
-		7D67467720771E9200728CF5 /* Release */ = {
+		7D66EF3920853BBA003B927A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -248,25 +253,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7D67466920771E9200728CF5 /* Build configuration list for PBXProject "Live_coding_semaphores" */ = {
+		7D66EF2B20853BBA003B927A /* Build configuration list for PBXProject "SleepingBarber" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7D67467320771E9200728CF5 /* Debug */,
-				7D67467420771E9200728CF5 /* Release */,
+				7D66EF3520853BBA003B927A /* Debug */,
+				7D66EF3620853BBA003B927A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7D67467520771E9200728CF5 /* Build configuration list for PBXNativeTarget "Live_coding_semaphores" */ = {
+		7D66EF3720853BBA003B927A /* Build configuration list for PBXNativeTarget "SleepingBarber" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7D67467620771E9200728CF5 /* Debug */,
-				7D67467720771E9200728CF5 /* Release */,
+				7D66EF3820853BBA003B927A /* Debug */,
+				7D66EF3920853BBA003B927A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 7D67466620771E9200728CF5 /* Project object */;
+	rootObject = 7D66EF2820853BBA003B927A /* Project object */;
 }
