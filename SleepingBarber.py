@@ -8,7 +8,7 @@ from random import *
 
 lock = threading.Lock()
 cv = threading.Condition(lock)
-
+c = numberOfClients
 #creating Semaphore for barbers available
 barbers_available_sem = threading.BoundedSemaphore()
 #creating Semaphore for chairs available
@@ -16,35 +16,28 @@ chairs_available_sem = threading.BoundedSemaphore()
 
 #Barber will be in a loop, waitinf for signal and semaphore
 def Barbers(threadID, num_c, hairCutTime):
-    hairCut = hairCutTime
-    clients_count = int(num_c)
-    
-    #print "Clients_count type: ", type(clients_count), "\n"
+    global barbers_available_sem
     #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair?
     while True:
-        if clients_count == 0:
+        cv.acquire()
+        print "barber ",threadID, ": sleeping..."
+        cv.wait() #Barbers waits or sleeps until client signals
+        #Barber has been signaled continue#
+        barbers_available_sem.release()#increments the counter bc babrber is available
+        print "barber ",threadID, ": haircut..."
+        num_c = num_c - 1
+        print "Clients count: ",c
+        time.sleep(int(hairCutTime)) #SLeep for  amount of time for haircut
+        cv.release()
+        
+        if numberOfClients == 0:
             print "no more clients:", clients_count
             sys.exit(1)
-        
-       
-        if clients_count > 0:
-            cv.acquire()
-            print "barber ",threadID, ": sleeping..."
-            cv.wait() #Barbers waits or sleeps until client signals
-            #Barber has been signaled continue#
-            print "barber ",threadID, ": haircut..."
-            time.sleep(int(hairCut)) #SLeep for  amount of time for haircut
-            clients_count -= 1
-            print "Client counts: ",clients_count
-            cv.release()
-            print "condition variable release"
-            barbers_available_sem.release()#increments the counter
-            print "Barbers available release"
 
 #When barber haircuting haircut_t time r equired for a haircut
 def Clients(threadID, hairCutTime):
+    global chairs_available_sem
     #will arrive at random intervals and signal barber
-    hairCut = hairCutTime
     #if barbers available returns true then clients can proceed, else they check the waiting room
     
     
@@ -53,17 +46,18 @@ def Clients(threadID, hairCutTime):
         cv.acquire()#The client thread needs to acquire the condition before it can notify the barber
         cv.notify()#signal that client is ready
         print "client ", threadID,": haircut..."
-        time.sleep(int(hairCut))
+        time.sleep(int(hairCutTime))
         cv.release()
     else:
-        print "client ", threadID,": waiting..."
-        if chairs_available_sem.acquire():
+        if chairs_available_sem.acquire():#we block or continue if chair available
+            print "client ", threadID,": waiting..."
+            barbers_available_sem.acquire()#we block and decrement
             cv.acquire()
             cv.notify()#signal that client is ready
             print "client ", threadID,": haircut..."
-            time.sleep(int(hairCut))
+            time.sleep(int(hairCutTime))
             cv.release()
-            chairs_available_sem.release()
+            chairs_available_sem.release()#increments
         else:
             print "client ", threadID,": leaving..."
 
@@ -107,8 +101,7 @@ def main():
         clients = threading.Thread(target=Clients, args=(i,hair_cut_t))
         clients.start()
 
-   
-    
+
 
 if __name__ == '__main__':
     main()
