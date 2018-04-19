@@ -1,59 +1,71 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import sys
 import threading
-from time import sleep
+import time
+from random import *
 
-cv = threading.Condition()
 lock = threading.Lock()
 
-#Note: the notify() and notifyAll() methods doesn't release the lock; this means that the thread 
-#or threads awakened will not return from their wait() call immediately, 
-#but only when the thread that called notify() or notifyAll() finally relinquishes ownership of the lock.
+cv = threading.Condition(lock)
 
-def ping(arg):
-    #The acquire() method locks the
-    #Lock and blocks execution until the release() method in some other coroutine sets it to unlocked
-    print "Before ping function acquire lock\n"
-    cv.acquire()
-    lock.acquire()#lock
-    try:
-        print "ping!"
-        print "After ping function acquire lock\n"
-    finally:
-        lock.release()#unlock
-        print "ping function release\n"
-    cv.wait()
-    cv.notify()
-    print "ping function notify\n"
+#Barber will be in a loop, waitinf for signal and semaphore
+def Barbers(arg):
+    print "Barber ", arg, "\n "
     
-def pong(arg):
-    print "Before pong acquire lock\n"
-    lock.acquire()#Acquire the underlying lock. This method calls the
-    #corresponding method on the underlying lock; the return value is whatever that method returns.
-    cv.acquire()
-    try:
-        print "PONG!\n"
-        cv.notify()#wakes up one of the threads waiting for the condition variabel, if any waiting.
-        print "Thread notified in pong\n"
-    finally:
-        lock.release()
-        cv.release()
-        print "Released in pong\n"
+def Chairs(arg):
+    print "Chairs ", arg, "\n"
+    
     
 def main():
-    #print 'Number of arguments:', len(sys.argv), 'arguments.'
-    #print 'Argument List:', str(sys.argv)
-    #
-    
-    pings = threading.Thread(target=ping, args=(1,))
-    pings.start()
-    
-    pongs = threading.Thread(target=pong, args=(1,))
-    pongs.start()
+    try:
+        #//1 barber, 1 client, 1 chair, arrival_t = 100, haircut_t = 10 μs
+        #Semaphore buffer size for number of barbers
+        num_barbers = sys.argv[1]
+        print "num_barbers " + num_barbers
+        num_clients = sys.argv[2]
+        print "num_clients " + num_clients
+        #Semaphore buffer size for number of chairs
+        num_chairs = sys.argv[3]
+        print "num_chairs " + num_chairs
+        #maximum time between clients
+        arrival_t = sys.argv[4]
+        print "arrival_t " + num_chairs
+        #required time for haircut
+        hair_cut_t = sys.argv[5]
+        print "hair_Cut " + hair_cut_t
+    except ValueError:
+        print 'Value must be greater than 0'
+        sys.exit(1)
+    except IndexError:
+        print 'usage: python SleepingBarber.py num_barbers num_clients num_chairs arrival_t haircut_t'
+        sys.exit(1)  # abort execution
 
 
+    for i in range(int(num_chairs)):
+        chairs = threading.Thread(target=Chairs, args=(i,))
+        chairs.start()
 
+#    for i in range(int(num_barbers)):
+#        barbers = threading.Thread(target=Barbers, args=(i,))
+#        barbers.start()
+
+
+    for i in range(int(num_clients)):
+        #Clients are created at random times, thus arrivcing at random times to the barber
+        x = randint(1, int(arrival_t)) # Pick a random number between 1 and arrival_t given
+        time.sleep(int(x))
+        clients = threading.Thread(target=Barbers, args=(i,))
+        clients.start()
+
+
+#    #clients use wait condition variables to signal a barber
+#    clients = threading.Thread(target=barbers, args=(1,))
+#    clients.start()
+
+   
     
+
 if __name__ == '__main__':
     main()
