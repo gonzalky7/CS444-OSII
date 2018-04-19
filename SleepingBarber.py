@@ -6,40 +6,60 @@ import threading
 import time
 from random import *
 
+
+globvar = 0
+globClientsLeft = 0
 lock = threading.Lock()
 cv = threading.Condition(lock)
-c = numberOfClients
+
+
 #creating Semaphore for barbers available
 barbers_available_sem = threading.BoundedSemaphore()
 #creating Semaphore for chairs available
 chairs_available_sem = threading.BoundedSemaphore()
 
+def incrementGlobal():
+    global globvar
+    globvar += 1
+    return globvar
+
+
+def incrementGlobalClientsLeft():
+    global globClientsLeft
+    globClientsLeft += 1
+    return globClientsLeft
+
 #Barber will be in a loop, waitinf for signal and semaphore
 def Barbers(threadID, num_c, hairCutTime):
     global barbers_available_sem
+    global globvar
+    print "Num_c: ", num_c
     #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair?
     while True:
         cv.acquire()
         print "barber ",threadID, ": sleeping..."
+        
         cv.wait() #Barbers waits or sleeps until client signals
         #Barber has been signaled continue#
-        barbers_available_sem.release()#increments the counter bc babrber is available
+        incrementGlobal()
+        print "Glob var: ", globvar
         print "barber ",threadID, ": haircut..."
-        num_c = num_c - 1
-        print "Clients count: ",c
         time.sleep(int(hairCutTime)) #SLeep for  amount of time for haircut
         cv.release()
-        
-        if numberOfClients == 0:
-            print "no more clients:", clients_count
-            sys.exit(1)
+        barbers_available_sem.release()#increments the counter bc babrber is available
+
+        ###GOO HOME ###
+        if int(num_c) == int(globvar):
+            cv.acquire()
+            cv.wait()
+            cv.release()
+            return
 
 #When barber haircuting haircut_t time r equired for a haircut
 def Clients(threadID, hairCutTime):
     global chairs_available_sem
     #will arrive at random intervals and signal barber
     #if barbers available returns true then clients can proceed, else they check the waiting room
-    
     
     if barbers_available_sem.acquire(blocking=False):#decrements the counter
         print "client ", threadID, ": arriving..."
@@ -51,7 +71,7 @@ def Clients(threadID, hairCutTime):
     else:
         if chairs_available_sem.acquire():#we block or continue if chair available
             print "client ", threadID,": waiting..."
-            barbers_available_sem.acquire()#we block and decrement
+            barbers_available_sem.acquire(blocking=False)#we block and decrement
             cv.acquire()
             cv.notify()#signal that client is ready
             print "client ", threadID,": haircut..."
@@ -60,9 +80,13 @@ def Clients(threadID, hairCutTime):
             chairs_available_sem.release()#increments
         else:
             print "client ", threadID,": leaving..."
-
+            incrementGlobalClientsLeft()
+            return
     
 def main():
+    global globvar
+    global globClientsLeft
+    
     try:
         #//1 barber, 1 client, 1 chair, arrival_t = 100, haircut_t = 10 μs
         num_barbers = sys.argv[1]
@@ -80,7 +104,6 @@ def main():
         sys.exit(1)  # abort execution
 
 
-
     ##########CREATING THREADS FOR BARBERS AND CLIENTS##########
 
 
@@ -94,14 +117,31 @@ def main():
         barbers = threading.Thread(target=Barbers, args=(i, num_clients,hair_cut_t))
         barbers.start()
 
+    clientsThreads = []
     for i in range(int(num_clients)):
         #Clients are created at random times, thus arrivcing at random times to the barber
         x = randint(1, int(arrival_t))
         time.sleep(int(x))
         clients = threading.Thread(target=Clients, args=(i,hair_cut_t))
+        clientsThreads.append(clients)
         clients.start()
 
 
+    for thread in clientsThreads:
+        thread.join()
+
+    time.sleep(5)
+
+    ####Notify the barbers to go home##
+    cv.acquire()
+    cv.notify_all()#notify all the barbers that it is good to go home
+    cv.release()
+
+    print "TOTALS:\n"
+    print "Total haircuts: ",globvar
+    print "Avg Barber sleep time:"
+    print "Number clients that Left:",globClientsLeft
+    print "Avg Client wait time: "
 
 if __name__ == '__main__':
     main()
