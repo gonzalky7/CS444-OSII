@@ -7,16 +7,42 @@ import time
 from random import *
 
 lock = threading.Lock()
-
 cv = threading.Condition(lock)
+barbers_available_sem = threading.BoundedSemaphore()
+
+
 
 #Barber will be in a loop, waitinf for signal and semaphore
-def Barbers(arg):
-    print "Barber ", arg, "\n "
+def Barbers(threadID, num_c):
+    clients_count = int(num_c)
+    print "Clients_count type: ", type(clients_count), "\n"
+    #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair?
     
-def Chairs(arg):
-    print "Chairs ", arg, "\n"
+    while True:
+        cv.acquire()
+        cv.wait() #Wait until client notifies
+        if clients_count > 0:
+            print "Cutting hair", threadID, "\n "
+            clients_count -= 1
+            cv.release()
+        elif clients_count == 0:
+            print "no more clients \n"
+            sys.exit(1)
+
+#When barber haircuting haircut_t time r equired for a haircut
+
+def Clients(threadID):
+    #will arrive at random intervals and signal barber
     
+    barbers_available_sem.acquire()#decrements the counter See if barber available if not block
+    #The client thread needs to acuire the condition before it can notify the barber
+    cv.acquire()
+    print "Clients ", threadID, "\n"
+    cv.notify()#signal that client is ready
+    cv.release()
+    barbers_available_sem.release()#increments the counter
+
+
     
 def main():
     try:
@@ -43,26 +69,25 @@ def main():
         sys.exit(1)  # abort execution
 
 
-    for i in range(int(num_chairs)):
-        chairs = threading.Thread(target=Chairs, args=(i,))
-        chairs.start()
 
-#    for i in range(int(num_barbers)):
-#        barbers = threading.Thread(target=Barbers, args=(i,))
-#        barbers.start()
+        #####CREATING THREADS FOR BARBERS AND CLIENTS####
+    int(num_barbers)
+    #creating Semaphore for barbers available
+    barbers_available_sem = threading.BoundedSemaphore(value=num_barbers)
+    #creating Semaphore for chairs available
+#    chairs_available_sem = threading.BoundedSemaphore(value=num_chairs)
+
+    for i in range(int(num_barbers)):
+        barbers = threading.Thread(target=Barbers, args=(i, num_clients))
+        barbers.start()
 
 
     for i in range(int(num_clients)):
         #Clients are created at random times, thus arrivcing at random times to the barber
-        x = randint(1, int(arrival_t)) # Pick a random number between 1 and arrival_t given
+        x = randint(1, int(arrival_t))
         time.sleep(int(x))
-        clients = threading.Thread(target=Barbers, args=(i,))
+        clients = threading.Thread(target=Clients, args=(i,))
         clients.start()
-
-
-#    #clients use wait condition variables to signal a barber
-#    clients = threading.Thread(target=barbers, args=(1,))
-#    clients.start()
 
    
     
