@@ -52,7 +52,7 @@ def Barbers(threadID, num_c, hairCutTime):
         start_time = time.time()
         cv.wait() #Barbers waits or sleeps until client signals
         elapsed_time = time.time() - start_time
-        avgSleepTimeBarbers = elapsed_time
+        avgSleepTimeBarbers += elapsed_time
         #Barber has been signaled continue#
         #I had to use this flag here bc when we signaled from main the barber threads were hanging when I put the return function
         #This just keeps the barber from incrementing the global counts and printing
@@ -94,7 +94,7 @@ def Clients(threadID, hairCutTime):
             start_time = time.time()
             barbers_available_sem.acquire()#check if barber is available
             elapsed_time = time.time() - start_time
-            avgWaitTimeClients = elapsed_time
+            avgWaitTimeClients += elapsed_time
             cv.acquire()
             cv.notify()#signal that client is ready
             print "client ", threadID,": haircut..."
