@@ -13,7 +13,8 @@ globClientsLeft = 0
 lock = threading.Lock()
 cv = threading.Condition(lock)
 clientsDoneFlag = False
-
+avgWaitTimeClients = 0
+avgSleepTimeBarbers = 0
 
 #creating Semaphore for barbers available
 barbers_available_sem = threading.Semaphore()
@@ -33,16 +34,17 @@ def incrementGlobalClientsLeft():
 
 
 
-
-
 def Barbers(threadID, num_c, hairCutTime):
-    global barbers_available_sem, totalHairCuts,globClientsLeft,clientsDoneFlag
+    global barbers_available_sem, totalHairCuts,globClientsLeft,clientsDoneFlag, avgSleepTimeBarbers
     #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair?
     #The barbers continue in a while loop and wait to be signaled by the clients
     while True:
         cv.acquire()
         print "barber ",threadID, ": sleeping..."
+        start_time = time.time()
         cv.wait() #Barbers waits or sleeps until client signals
+        elapsed_time = time.time() - start_time
+        avgSleepTimeBarbers = elapsed_time
         #Barber has been signaled continue#
         incrementGlobal()#
         if (clientsDoneFlag):
@@ -58,6 +60,7 @@ def Barbers(threadID, num_c, hairCutTime):
 def Clients(threadID, hairCutTime):
     global chairs_available_sem
     global barbers_available_sem
+    global avgWaitTimeClients
     #will arrive at random intervals and signal barber
     #if barbers available returns true then clients can proceed, else they check the waiting room
     
@@ -69,12 +72,13 @@ def Clients(threadID, hairCutTime):
         time.sleep(float(hairCutTime)/1000.)
         cv.release()
     else:
-        if chairs_available_sem.acquire(blocking=False):#we block or continue if chair available
-            #get current time before waiting and after waiting and minus, in a global variabl and then divide
+        if chairs_available_sem.acquire(blocking=False):#we do a try wait becuase we already checked if barbers were available
             print "client ", threadID,": waiting..."
-            #Get current time and divide
-            barbers_available_sem.acquire()#we block and decrement
-            
+            #Get current time and divide##########
+            start_time = time.time()
+            barbers_available_sem.acquire()#check if barber is available
+            elapsed_time = time.time() - start_time
+            avgWaitTimeClients = elapsed_time
             cv.acquire()
             cv.notify()#signal that client is ready
             print "client ", threadID,": haircut..."
@@ -87,7 +91,7 @@ def Clients(threadID, hairCutTime):
     
 def main():
     global totalHairCuts, globClientsLeft,chairs_available_sem, barbers_available_sem,clientsDoneFlag
- 
+    global avgWaitTimeClients
     
     try:
         #//1 barber, 1 client, 1 chair, arrival_t = 100, haircut_t = 10 μs
@@ -107,8 +111,6 @@ def main():
 
 
     ##########CREATING THREADS FOR BARBERS AND CLIENTS##########
-
-
     #creating Semaphore for barbers available
     barbers_available_sem = threading.Semaphore(value=int(num_barbers))
     #creating Semaphore for chairs available
@@ -151,9 +153,9 @@ def main():
         print "\n"
         print "TOTALS:"
         print "Total haircuts: ",totalHairCuts
-        print "Avg Barber sleep time:"
+        print "Avg Barber sleep time:",float(avgSleepTimeBarbers)/float(num_barbers)
         print "Number clients that Left:",globClientsLeft
-        print "Avg Client wait time: "
+        print "Avg client wait time: ",float(avgWaitTimeClients)/float(num_clients)
 
 if __name__ == '__main__':
     main()
