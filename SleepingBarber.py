@@ -33,11 +33,14 @@ def incrementGlobalClientsLeft():
     return globClientsLeft
 
 
-
+#For the barber function we pass the thread ID's, number of clients and haircut time
+#The barber uses conditional variabls for signaling
+#Waiting for clients to arrive and to be awakened. Woked? Woken up?
 def Barbers(threadID, num_c, hairCutTime):
-    global barbers_available_sem, totalHairCuts,globClientsLeft,clientsDoneFlag, avgSleepTimeBarbers
-    #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair?
-    #The barbers continue in a while loop and wait to be signaled by the clients
+    global barbers_available_sem, totalHairCuts,globClientsLeft,clientsDoneFlag
+    global avgSleepTimeBarbers
+    #The barber must acquire the condition(and thus the related lock), and can then attempt to cut hair
+    #The barbers continue in a while loop and waiting to be signaled by the clients
     while True:
         cv.acquire()
         print "barber ",threadID, ": sleeping..."
@@ -46,17 +49,24 @@ def Barbers(threadID, num_c, hairCutTime):
         elapsed_time = time.time() - start_time
         avgSleepTimeBarbers = elapsed_time
         #Barber has been signaled continue#
-        incrementGlobal()#
-        if (clientsDoneFlag):
-            return
-        print "barber ",threadID, ": haircut..."
+        #I had to use this flag here bc when we signaled from main the barber threads were hanging when I put the return function
+        #This just keeps the barber from incrementing the global counts and printing
+        if not clientsDoneFlag:
+            incrementGlobal()
+            print "barber ",threadID, ": haircut..."
         time.sleep(float(hairCutTime)/1000.) #SLeep for  amount of time for haircut
         cv.release()
         barbers_available_sem.release()#increments the counter bc babrber is available
 
+        #We use a boolean flag that will return when all the clients have finished getting a hair cut
+        #This flag is set after all the clients have joined
+        if (clientsDoneFlag):
+            return
 
-
-#When barber haircuting haircut_t time r equired for a haircut
+#For client we pass in thread ID and the haircut time which each client has to wait to
+#In the client function we have a semaphore that does not block, so if no barbers available the thread will go to the else statement
+#Where the client will come to another semaphore for available chairs in the waiting rooom.
+#Again we have a no blocking semaphore if no chairs availble client leaves
 def Clients(threadID, hairCutTime):
     global chairs_available_sem
     global barbers_available_sem
@@ -74,7 +84,8 @@ def Clients(threadID, hairCutTime):
     else:
         if chairs_available_sem.acquire(blocking=False):#we do a try wait becuase we already checked if barbers were available
             print "client ", threadID,": waiting..."
-            #Get current time and divide##########
+            #To calculate average we get the current time waiting
+            #Then we acquire the current time when client has been barber availble: subtracting the two times and storing in global variable
             start_time = time.time()
             barbers_available_sem.acquire()#check if barber is available
             elapsed_time = time.time() - start_time
@@ -87,14 +98,14 @@ def Clients(threadID, hairCutTime):
             chairs_available_sem.release()#increments
         else:
             print "client ", threadID,": leaving..."
-            incrementGlobalClientsLeft()
+            incrementGlobalClientsLeft()#capturing the number of clients that left
     
 def main():
     global totalHairCuts, globClientsLeft,chairs_available_sem, barbers_available_sem,clientsDoneFlag
     global avgWaitTimeClients
     
+    #capturing all the command line arguments and some error checking
     try:
-        #//1 barber, 1 client, 1 chair, arrival_t = 100, haircut_t = 10 μs
         num_barbers = sys.argv[1]
         num_clients = sys.argv[2]
         num_chairs = sys.argv[3]
@@ -138,10 +149,12 @@ def main():
     #Give some time for barbers
     time.sleep(5)
     ####Notify the barbers to go home##
+
+
     if int(threadJoinClients) == int(num_clients):
+        clientsDoneFlag = True #set a flag so in barbers function, barbers know to return
         cv.acquire()
         cv.notifyAll()#notify all the barbers that it is good to go home
-        clientsDoneFlag = True #set a flag so in barbers function, barbers know to return
         cv.release()
 
     threadJoinBarbers = 0
