@@ -21,6 +21,11 @@ barbers_available_sem = threading.Semaphore()
 #creating Semaphore for chairs available
 chairs_available_sem = threading.Semaphore()
 
+def valueLessThanZero(value):
+    if int(value) <= 0:
+        print "Value must be greater than 0"
+        sys.exit(1)
+
 def incrementGlobal():
     global totalHairCuts
     totalHairCuts += 1
@@ -107,14 +112,17 @@ def main():
     #capturing all the command line arguments and some error checking
     try:
         num_barbers = sys.argv[1]
+        valueLessThanZero(num_barbers)
         num_clients = sys.argv[2]
+        valueLessThanZero(num_clients)
         num_chairs = sys.argv[3]
-        #maximum time between clients
+        valueLessThanZero(num_chairs)
         arrival_t = sys.argv[4]
-        #required time for haircut
+        valueLessThanZero(arrival_t)
         hair_cut_t = sys.argv[5]
+        valueLessThanZero(hair_cut_t)
     except ValueError:
-        print 'Value must be greater than 0'
+        print 'usage: python SleepingBarber.py num_barbers num_clients num_chairs arrival_t haircut_t'
         sys.exit(1)
     except IndexError:
         print 'usage: python SleepingBarber.py num_barbers num_clients num_chairs arrival_t haircut_t'
