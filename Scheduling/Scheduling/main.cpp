@@ -11,6 +11,7 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
+    //UNIX> ./hw4 sim_time algorithm [time_slice]
     
     cout << "You have entered " << argc
     << " arguments:" << "\n";
