@@ -1,4 +1,10 @@
+all: schedule
 
-all:
-	g++ main.cpp -o schedulings
-	
+schedule: main.o
+	g++ main.op -o scheduling
+
+main.o: main.cpp
+	g++ -c main.cpp
+
+clean:
+	rm -rf *o scheduling	
