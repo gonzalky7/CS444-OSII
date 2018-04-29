@@ -12,43 +12,64 @@
 #include <iterator>
 
 using namespace std;
-multimap<int, int> fcfs_multimap;
-void fcfs(int pid, int arrival, int burst) {
+string algorithm;
+int sim_time;
+
+typedef struct Processes{
+    int p_id;
+    int arival_time;
+    int burst_time;
+} PROCESS;
+
+
+void checkArgs(const char * arg[], int argc) {
+    const char * algos[3] = {"FCFS","SJF", "RR"};
+    for (int i = 0; i < 3; i++) {
+        if(strcmp(arg[2], algos[i]) == 0){
+            cout << "algos["<<i<<"]:"<<algos[i] <<endl;
+            algorithm = algos[i];
+            return;
+        }
+    }
+    fprintf(stderr, "algorithm: FCFS, SJF, RR\n");
+    exit(1);
+}
+
+void fcfs() {
     
   
-    fcfs_multimap.insert(pair<int, int> (pid, burst));
-    
+   
 
 }
 
 int main(int argc, const char * argv[]) {
-    //UNIX> ./hw4 sim_time algorithm [time_slice]
-
+    // Make sure number of arguments have been entered : UNIX> ./hw4 sim_time algorithm [time_slice]
+    if (argc != 3 && argc != 4) {
+        fprintf(stderr, "usage: ./hw4 simulation_time algorithm [time_slice]\n");
+        exit(1);
+    }else {
+        checkArgs(argv,argc);
+        //int sim_time = atoi(argv[1]);
+        string algorithm = argv[2];
+    }
     
-    string sim_time = argv[1];
-    string algorithm = argv[2];
-    
-    string line;
-    
-//    int tmp;
     while (!cin.eof()) {
-        int pid ;
+        int process_id ;
         int arrival;
         int burst ;
         
-        cin >> pid >> arrival >> burst;
+        cin >> process_id >> arrival >> burst;
         if (algorithm == "FCFS"){
-            fcfs(pid, arrival, burst);
+            PROCESS pid;
+            pid.p_id = process_id;
+            pid.arival_time = arrival;
+            pid.burst_time = burst;
+            
+            cout << "Procces id: "<<pid.p_id<<" arrival_Time: "<<pid.arival_time << " burst_Time: "<<pid.burst_time<<endl;
+            //fcfs();
         }
     }
-    multimap <int, int> :: iterator itr;
-    cout << "\tPID\tBURST TIME\n";
-    for (itr = fcfs_multimap.begin(); itr != fcfs_multimap.end(); ++itr)
-    {
-        cout  <<  '\t' << itr->first
-        <<  '\t' << itr->second << '\n';
-    }
-    cout << endl;
+    
     
     return 0;
 }
