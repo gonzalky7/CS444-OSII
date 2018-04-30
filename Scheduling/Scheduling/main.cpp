@@ -10,10 +10,15 @@
 #include <fstream>
 #include <map>
 #include <iterator>
+#include <list>
 
 using namespace std;
 string algorithm;
 int sim_time;
+
+float avg_wait_time = 0.0;
+int through_put = 0;
+int remaining_processes = 0;
 
 typedef struct Processes{
     int p_id;
@@ -21,6 +26,7 @@ typedef struct Processes{
     int burst_time;
 } PROCESS;
 
+list<Processes> process_list;
 
 void checkArgs(const char * arg[], int argc) {
     const char * algos[3] = {"FCFS","SJF", "RR"};
@@ -58,12 +64,70 @@ void checkArgs(const char * arg[], int argc) {
     exit(1);
 }
 
-void fcfs() {
-    
-  
-   
-
+bool compare_processes_arrival_time(Processes p1, Processes p2) {
+    if(p1.arival_time > p2.arival_time){
+        return false;
+    }
+    return true;
 }
+
+void printPerformanceStats(){
+    fprintf(stderr, "Throughput =  %d\n", through_put);
+    fprintf(stderr, "Avg wait time =  %.2f\n", avg_wait_time/through_put);
+    fprintf(stderr, "Number of remaining processes =  %d\n", remaining_processes);
+    exit(1);
+}
+
+void fcfs(list<Processes> process_list) {
+    list<Processes>::iterator process_it;
+    int simulation_time = sim_time;
+    bool times_up = true;
+    remaining_processes = int(process_list.size());
+    //Need to sort processes by arrival time given random out of order arrival times fron .txt file
+    process_list.sort(compare_processes_arrival_time);
+    
+    //start simulation time and the scheduling of processes
+     while(times_up) {
+         cout << "=================================" << endl;
+        for (process_it = process_list.begin(); process_it != process_list.end(); process_it++) {
+            int burst_time_timer = process_it->burst_time;
+            int burst_time = process_it->burst_time;
+            
+            cout <<avg_wait_time<<": "<<"  scheduling "<< "PID: " << process_it->p_id<<" CPU =  " << burst_time<<endl;
+            //DO WORK: This is simulating the process doing work
+            while (burst_time_timer != 0) {
+                burst_time_timer -= 1;
+            }
+            //Service time is just the addition of all burst times / processes
+            avg_wait_time += burst_time;
+            cout <<avg_wait_time<<": "<<"             "<< "PID: " << process_it->p_id<<" terminated" << endl;
+            
+            through_put++;//as a successful process has finished add it to throughput
+            remaining_processes -= 1;//decrement list size to show remaining processes
+            simulation_time -=1;
+            //check on simulation time break out of the loop when time has run out
+            if (simulation_time == 0) {
+                times_up = false;
+                break;
+            }
+            //If simulation time is higher then number of processes given
+            if (remaining_processes == 0) {
+                cout << "===================================" << endl;
+                printPerformanceStats();
+            }
+        }
+    }
+    //Simulation Time has ran out
+    cout << "=================================" << endl;
+    cout << "Simulation time ran out" <<endl;
+    printPerformanceStats();
+}
+
+
+
+
+
+
 
 int main(int argc, const char * argv[]) {
     // Make sure number of arguments have been entered : UNIX> ./hw4 sim_time algorithm [time_slice]
@@ -72,25 +136,27 @@ int main(int argc, const char * argv[]) {
         exit(1);
     }else {
         checkArgs(argv,argc);
-        //int sim_time = atoi(argv[1]);
+        sim_time = atoi(argv[1]);
         string algorithm = argv[2];
     }
     //Keep Reading in processes from stdin until end of file
-    while (!cin.eof()) {
-        int process_id ;
-        int arrival;
-        int burst ;
-
-        cin >> process_id >> arrival >> burst;
-        if (algorithm == "FCFS"){
-            PROCESS p;
-            p.p_id = process_id;
-            p.arival_time = arrival;
-            p.burst_time = burst;
-
-            cout << "Procces id: "<<p.p_id <<" arrival_Time: "<<p.arival_time << " burst_Time: "<<p.burst_time<<endl;
-            //fcfs();
-        }
+    //int tmp;
+    int process_id ;
+    int arrival;
+    int burst ;
+    while (cin >> process_id >> arrival >> burst) {
+        //Fill up list before we send it to algorithms
+        //cin >> process_id >> arrival >> burst;
+        PROCESS p;
+        p.p_id = process_id;
+        p.arival_time = arrival;
+        p.burst_time = burst;
+        //cout<<"Pushing id: " <<p.p_id<<endl;
+        process_list.push_back(p);
+    }
+    
+    if (algorithm == "FCFS"){
+        fcfs(process_list);
     }
     
     return 0;
