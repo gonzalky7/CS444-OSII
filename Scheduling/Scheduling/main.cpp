@@ -17,6 +17,7 @@
 using namespace std;
 string algorithm;
 int sim_time;
+int time_slice;
 
 float avg_wait_time = 0;
 float avg_turn_around_time = 0.0;
@@ -119,28 +120,28 @@ void fcfs(list<Processes> process_list) {
     process_list.sort(compare_processes_arrival_time);
     int i = 0;
     service_time = 0;
-    //wt.push_back(0);
-    
+    int burst_time = 0;
     //start simulation time and the scheduling of processes
          cout << "=================================" << endl;
         for (process_it = process_list.begin(); process_it != process_list.end(); process_it++) {
             int burst_time_timer = process_it->burst_time;
             
-            //cout <<burst_time<<": "<<"  scheduling "<< " PID: " << process_it->p_id<<" CPU =  " << process_it->burst_time<<endl;
+            cout <<burst_time<<": "<<"  scheduling "<< " PID: " << process_it->p_id<<" CPU =  " << process_it->burst_time<<endl;
             
             while (burst_time_timer != 0) {
                 burst_time_timer -= 1;
             }
-        
+            
+           
             wt.push_back(service_time - process_it->arrival_time);
-            //cout <<burst_time<<": "<<"             "<< "PID: " << process_it->p_id<<" terminated" << endl;
             
-            
+            cout <<burst_time<<": "<<"              "<< "PID: " << process_it->p_id<<" terminated" << endl;
             tat.push_back(process_it->burst_time + wt[i]);
-            
+            burst_time += process_it->burst_time;
             service_time += process_it->burst_time;
             i++;
-            
+            through_put++;//as a successful process has finished add it to throughput
+            remaining_processes -= 1;//decrement list size to show remaining processes
             //check on simulation time break out of the loop when time has run out
             simulation_time -= 1;
             if (simulation_time == 0) {
@@ -152,8 +153,6 @@ void fcfs(list<Processes> process_list) {
                 findAvgerages(wt,tat, n,t);
                 break;
             }
-            through_put++;//as a successful process has finished add it to throughput
-            remaining_processes -= 1;//decrement list size to show remaining processes
             //If simulation time is higher then number of processes given
             if (remaining_processes == 0) {
                 cout << "===================================" << endl;
@@ -167,27 +166,20 @@ void fcfs(list<Processes> process_list) {
 
 
 void sjf(list<Processes> process_list){
-    process_list.sort(compare_processes_burst_time);
-    
-    //Once list has been sorted by burst times handle like FCFS
     list<Processes>::iterator process_it;
     
     vector<int> wt;
     vector<int> tat;
     int simulation_time = sim_time;
     remaining_processes = int(process_list.size());
-    
-    process_list.sort(compare_processes_arrival_time);
+    process_list.sort(compare_processes_burst_time);
     int i = 0;
     service_time = 0;
-    wt.push_back(0);
     
     //start simulation time and the scheduling of processes
     cout << "=================================" << endl;
     for (process_it = process_list.begin(); process_it != process_list.end(); process_it++) {
         int burst_time_timer = process_it->burst_time;
-        
-        
         
         cout <<process_it->burst_time<<": "<<"  scheduling "<< " PID: " << process_it->p_id<<" CPU =  " << process_it->burst_time<<endl;
         
@@ -195,14 +187,12 @@ void sjf(list<Processes> process_list){
             burst_time_timer -= 1;
         }
         
-        cout <<process_it->burst_time<<": "<<"             "<< "PID: " << process_it->p_id<<" terminated" << endl;
-        
-        //Send for calculation of stats HERE
-        //wait_time[i] = service_time - process_it->arrival_time;
         
         wt.push_back(service_time - process_it->arrival_time);
         
-        tat.push_back(wt[i] + process_it->burst_time);
+        cout <<process_it->burst_time <<": "<<"             "<< "PID: " << process_it->p_id<<" terminated" << endl;
+        tat.push_back(process_it->burst_time + wt[i]);
+        
         service_time += process_it->burst_time;
         i++;
         
@@ -213,7 +203,8 @@ void sjf(list<Processes> process_list){
             cout << "=================================" << endl;
             cout << "Simulation time ran out" <<endl;
             int n = int(wt.size());
-            //findAvgerages(wt,tat, n);
+            int t = int(tat.size());
+            findAvgerages(wt,tat, n,t);
             break;
         }
         through_put++;//as a successful process has finished add it to throughput
@@ -223,11 +214,30 @@ void sjf(list<Processes> process_list){
             cout << "===================================" << endl;
             cout << "Processes have finished" <<endl;
             int n = int(wt.size());
-            //findAvgerages(wt,tat, n);
+            int t = int(tat.size());
+            findAvgerages(wt,tat, n,t);
         }
     }
+}
+
+void rr(list<Processes> process_list) {
+    list<Processes>::iterator process_it;
+    
+    vector<int> wt;
+    vector<int> tat;
+    vector<Processes> request_queue;
+    
+    
+    
+    
+    
+    
+    
+    
     
 }
+
+
 
 
 int main(int argc, const char * argv[]) {
@@ -238,7 +248,9 @@ int main(int argc, const char * argv[]) {
     }else {
         checkArgs(argv,argc);
         sim_time = atoi(argv[1]);
-        string algorithm = argv[2];
+        algorithm = argv[2];
+        time_slice = atoi(argv[4]);
+        
     }
     //Keep Reading in processes from stdin until end of file
     //int tmp;
@@ -259,7 +271,7 @@ int main(int argc, const char * argv[]) {
         fcfs(process_list);
     }else if (algorithm == "SJF"){
         sjf(process_list);
-    }
+    }else if (algorithm == "RR")
     
     return 0;
 }
