@@ -1,0 +1,31 @@
+#1) Given the following sequence of page accesses and a page table of size 2, how many page faults will occur using: 
+
+a) (1 pts) FIFO page replacement?
+b) (1 pts) optimal page replacement? 
+c) (1 pts) LRU page replacement? 
+d) (1 pts) LFU page replacement? 
+
+page sequence: 8, 6, 8, 7, 5, 7, 6, 3, 0, 8, 3, 9. 
+
+FIFO: 5
+OPT: 5
+LRU: 6
+LFU: 7
+
+#2 (2 pts): If someone asked you "what is virtual memory," what would you say? 
+Virtual memory allows the execution of more processes by toggling between the limited RAM space and hard disk space. Because memory is finite, but even more so for RAM, virtual memory creates the illusion of infinite memory by swapping out page frames with disk frames that hold particular instructions to continue the process. 
+
+
+
+#3 (1 pt): Why is the optimal page replacement algorithm impossible to implement (in its pure form)?
+To implement optimal page replacement you would have to be able to have future knowledge of which page is not going to be used for a long time.  
+
+
+
+#4 (1 pt): True / False- virtual memory requires the entire process to be loaded into physical memory upon execution.  
+
+False
+
+
+#5 (2 pts): In the context of virtual memory, what is thrashing? 
+When a process is spending more time paging then executing. If A lot of processes are running and a user is switching between them continuously, the processes are probably having to page fault and needing to bring the instructions from disk to physical memory, but as soon as as the page is loaded into physical memory it or another frame is kicked out because of another page fault. This happening continuously causes thrashing. 
