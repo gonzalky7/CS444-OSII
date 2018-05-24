@@ -5,27 +5,17 @@ void setup() {
   Serial.flush();
   VM vm;
 
+int arr1[50,000]; 
+int arr2[50,000]; 
 
-  char *msg = "Hello from";
-  //this fills up the page table
-
-  for (int i = 0; i < strlen(msg); i++) {
-    vm[i * 32] = msg[i];
-  }
+for(int i = 0; i < 50,000; i++){
+  
+}
+//vm.getFaultRate(); 
 
 
-  for (int i = 0; i < strlen(msg); i++) {
-    Serial << (char) vm[i * 32];
-  }
 
-//vm[7978] = 100; 
-//vm[127937] = 100; 
-//vm[39847] = vm[7978] + vm[127937];
-//
-//Serial << "vm[7978] + vm[127937]" << " = " << vm[39847] << endl; 
 
-Serial << "\n";
-  //After message has been filed page table should have page values
 
   //vm.printPhysicalMemory();
   //vm.printPageTable();

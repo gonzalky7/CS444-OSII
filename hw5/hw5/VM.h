@@ -9,7 +9,7 @@
 #define HOLD 7
 
 #define VERBOSE 1
-#define TABLE_SIZE 16
+#define TABLE_SIZE 1
 
 class VM
 {
@@ -22,6 +22,9 @@ class VM
     
     public :
     VM(); 
+    int fault_rate;
+    int page_fault; 
+    int memory_reference; 
     int getFaultRate();//returns current fault fate (#faults/#refs)
     int resetFaultRate();//resets page fault variables (faults = refs = 0)
     byte& operator[] (const int index); 

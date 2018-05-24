@@ -7,6 +7,9 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
     for (int i = 0; i < (TABLE_SIZE * PG_SIZE); i++) {
         physicalAdressSpace[i] = '-';//filling with invalid
     }
+    fault_rate = 0; 
+    memory_reference = 0;
+    page_fault= 0;  
 }
 
  int index_value = 0; 
@@ -15,6 +18,7 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
  bool second_flag = false; 
  bool victim_counter_flag = false; 
  unsigned long i; 
+ 
  
  byte& VM::operator[] (const int index)
  {
@@ -34,6 +38,7 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
       Serial << "=======================================" << endl; 
       Serial << "requesting virtual address: " << index << endl; 
       Serial << "    page = "<< page<<",  offset = " << offset << endl;
+      memory_reference++; 
       }
        /* 1). Cycle through page table and look for page
          * that user is requesting.
@@ -47,7 +52,7 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
             
             if(VERBOSE == 1) {
               Serial << "Page FOUND!" << endl; 
-              Serial << "page table entry: " << page << endl; 
+              Serial << "page table entry: " << i << endl; 
               Serial << "physical address: " << index_value << endl; 
             }
             first_flag = false; 
@@ -62,15 +67,30 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
        * page has been allocated, page table and physical memory is one to one
        * i.e. if page table at 7 is empty Frame 7 in physical memory will be empty
        */ 
-       for (int i = 0; i < TABLE_SIZE; i++) {
-         if(pageTable[i] == -1) {
-              pageTable[i] = page;//here we update the page table
+       if(first_flag){
+         for (int i = 0; i < TABLE_SIZE; i++) {
           
+           if(pageTable[i] == -1) {
+              if(VERBOSE == 1){
+                Serial << "PAGE FAULT!" <<endl;
+                page_fault++; 
+                Serial << "   empty slot in page table: " << i << endl; 
+                Serial << "   reading SRAM memory page:" << page <<endl; 
+                Serial << "   physical address: " << i <<endl; 
+              }
+              //Reading memory from SRAM
+              sram.read_page(page, &physicalAdressSpace[i * 32]);
+              
+              //Update the page table
+              pageTable[i] = page;
+
               //Calculate offset to specify where in Frame to write value
               index_value = (i * 32) + offset;  
               return physicalAdressSpace[index_value]; 
-           }
-        second_flag = true; //did not find the page and page table is full
+            }
+            
+         }
+         second_flag = true; //did not find the page and page table is full
        }
        /*
         * 3). If page was not found in page table and there were no 
@@ -96,14 +116,15 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
            */
            if(VERBOSE == 1) {
             Serial << "PAGE FAULT! " << endl; 
-            Serial << "NO SPACE in page table" << endl;
-            Serial << "page OUT: " <<victim_page<< endl;
-            Serial << "page IN: " <<page<< endl;
+            page_fault++; 
+            Serial << "   NO SPACE in page table" << endl;
+            Serial << "   page OUT: " <<victim_page<< endl;
+            Serial << "   page IN: " <<page<< endl;
           }
           //update page table with new page
           pageTable[victim_counter_for_page_table] = page;
 
-          //this is the indexValue that will write the new contents into pysical memory
+         
           
             for (int i = 0; i < TABLE_SIZE; i++){
               if (page == pageTable[i]) {  
@@ -126,7 +147,16 @@ VM::VM() : sram(SRAM, HOLD){//constuctor initliazation list
 }
 
 
-
+int VM::getFaultRate() {
+  //returns current fault fate (#faults/#refs)
+  fault_rate = page_fault/memory_reference; 
+  Serial <<"_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=" << endl; 
+  Serial << "Page Fault rate: " << fault_rate << endl; 
+}
+int VM::resetFaultRate(){
+  //resets page fault variables (faults = refs = 0)
+  page_fault = memory_reference = 0; 
+}
 
 
 void VM::printPageTable() 
