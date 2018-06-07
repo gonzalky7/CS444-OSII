@@ -8,7 +8,7 @@
 #define SRAM 5
 #define HOLD 7
 
-#define VERBOSE 1
+#define VERBOSE 0
 #define TABLE_SIZE 1
 
 class VM
@@ -22,12 +22,12 @@ class VM
     
     public :
     VM(); 
-    int fault_rate;
-    int page_fault; 
-    int memory_reference; 
-    int getFaultRate();//returns current fault fate (#faults/#refs)
-    int resetFaultRate();//resets page fault variables (faults = refs = 0)
-    byte& operator[] (const int index); 
+    float fault_rate;
+    unsigned long page_fault; 
+    unsigned long memory_reference; 
+    float getFaultRate();//returns current fault fate (#faults/#refs)
+    void resetFaultRate();//resets page fault variables (faults = refs = 0)
+    byte& operator[] (unsigned long index); 
 
      void printPageTable();
      void printPhysicalMemory(); 
