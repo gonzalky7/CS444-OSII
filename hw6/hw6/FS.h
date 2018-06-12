@@ -23,10 +23,10 @@ class FS
     //into memory)
     void create(char *file_name); 
     int openf(char *file_name, FCB *f); 
-    void writef(FCB *f, void *m, int num_bytes); 
-    //read bytes from a file
-    //seek to beginning of a file (only)
-    void closef(char *file_name, FCB *f); 
+    void writef(FCB *f, byte* m, int num_bytes); 
+    void readf(FCB *f);
+    void seekf(FCB *f); 
+    void closef(); 
     void deletef(char *file_name); 
     void commit_to_eeprom(); 
     void list_all_files(); 

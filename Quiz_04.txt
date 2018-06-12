@@ -1,0 +1,25 @@
+#1 (2 pts) Explain the difference between SCAN and LOOK disk scheduling algorithms. 
+The SCAN disk scheduling algorithm disk arm will traverse the whole width of the disk. It will hit the final request and traverse all the way back executing and request a long the way. The LOOK scheduling algorithm will look for a request before it continues to move in a direction.  
+
+
+
+#2 (2 pts) What's the difference between SCAN and C-SCAN disk scheduling?
+SCAN when it moves in one direction it will service requests as it moves to the edge of the disk. When it reaches the end it will go into the other direction services requests as it goes along. C-SCAN will not service any requests on its way back, it will merely reset the arm and service requests after. 
+
+
+#3 (1 pt) True / False: linked-list disk block allocation suffers from external fragmentation. 
+False
+
+
+#4 (2 pts) The FBI can usually recover a non-encrypted disk even when the files have been "deleted".  How is this possible (what does the file system "delete" when it deletes a file)? 
+It just deletes the pointer to the file, or the information that lets the file system know where the information is stored in permanent memory. 
+
+
+
+#5 (2 pts) What is a virtual file system?  
+A virtual file system is the second layer of a file-system implementation. It serves as an interface from the file-system-generic operations from their implementation. It providaes a way to identify files throughout a network. It can distinguish local files from remote ones. 
+
+
+
+#6 (1 pt) What's a journaling file system?  
+It is a file system that uses log-based recovery techniques to save metadata. The file system keeps trach of changes, once the changes are written to the log, they are committed. The log file or circular buffer, will hold transactions if the system crashes. s
